@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        .insect{
+            width: 50px;
+            position: fixed;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+    // if (confirm(`Почати тестування`)){
+        // <!-- Задача 2. Байрактар. З верхньої частини екрану у випадковій позиції по горизонталі 
+        //     з’являються танки, які їдуть вниз. При кліку на танк він вибухає і зникає з екрану.  -->
+        
+        const imagesObj = {
+            tank: '../img/tank.png',
+            fire: '../img/fire.png'
+        }
+        class Tank{
+            constructor(imagesObj,maxStep,maxSpeed,cssObj){
+                this.imagesObj = imagesObj
+                this.maxStep = maxStep
+                this.maxSpeed = maxSpeed
+                this.cssObj = cssObj
+            }
+            getRandomValue(minValue, maxValue){
+                return minValue + Math.floor(Math.random() * (maxValue - minValue +1))
+            }
+            
+            setInitPositionCoordinates(){
+                this.top = 0
+                this.left = this.getRandomValue(0, 95)
+            }
+
+            setTankPosition(){
+                this.tank.style.top = this.top + '%'
+                this.tank.style.left = this.left + '%'
+            }
+
+            setInitTankPosition(){
+                this.setInitPositionCoordinates()
+                this.setTankPosition()
+            }
+
+            setInitDiraction(){
+                this.vy = this.getRandomValue(-this.maxStep,this.maxStep)
+            }
+
+            updateCoordinates(){
+                this.top += this.vy
+                if(this.top < 0 || this.top>100){
+                    this.vy = -this.vy
+                }
+            }
+
+            removeTank(target){
+                setTimeout(() => {
+                    target.remove()
+                }, 1000);
+            }
+
+            move(){
+                this.updateCoordinates()
+                this.setTankPosition()
+            }
+
+            onTap(event){
+                clearInterval(this.interval)
+                this.tank.src = this.imagesObj.fire
+                
+                const target = event.target
+                this.removeTank(target)
+
+            }
+            render(containerSelector){
+                const img = document.createElement('img')
+                img.className = this.cssObj.containerClass
+                img.src = this.imagesObj.tank
+    
+                this.tank = img
+                this.tank.onclick = this.onTap.bind(this)
+                this.setInitTankPosition()
+                this.setInitDiraction()
+
+                if(containerSelector){
+                    document.querySelector(containerSelector).append(img)
+                }
+
+                this.setInitDiraction()
+                this.interval = setInterval(() => this.move(), this.maxSpeed)
+            }
+
+        }
+        
+
+        const cssObj = {
+            containerClass : 'insect'
+        }
+        for (let i = 0; i < 10; i++) {
+            const tank = new Tank(
+                imagesObj,
+                Math.random()*3,
+                200,
+                cssObj)
+            tank.render('body')
+        }
+    // }
+    </script>
+</body>
+</html>
